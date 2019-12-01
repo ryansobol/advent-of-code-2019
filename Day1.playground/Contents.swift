@@ -1,10 +1,33 @@
 import Foundation
 
 let url = Bundle.main.url(forResource: "input", withExtension: "txt")
-let input = try! String(contentsOf: url!, encoding: .utf8)
+let input = try! String(contentsOf: url!)
 let masses = input
   .split(separator: "\n")
   .map { Int($0)! }
+
+// https://www.reddit.com/r/adventofcode/comments/e4axxe/2019_day_1_solutions/f9ct724
+func calcFuel(_ mass: Int) -> Int {
+  return mass / 3 - 2
+}
+
+func calcActualFuel(_ mass: Int) -> Int {
+  let fuel = calcFuel(mass)
+
+  return fuel > 0 ? fuel + calcActualFuel(fuel) : 0
+}
+
+let answer1 = masses
+  .map(calcFuel)
+  .reduce(0, +)
+
+print(answer1)
+
+let answer2 = masses
+  .map(calcActualFuel)
+  .reduce(0, +)
+
+print(answer2)
 
 // My solution for the 2nd problem
 struct Data {
@@ -29,28 +52,3 @@ while !current.masses.isEmpty {
 }
 
 print(current.fuel)
-
-// https://www.reddit.com/r/adventofcode/comments/e4axxe/2019_day_1_solutions/f9ct724
-func calcFuel(_ mass: Int) -> Int {
-  return mass / 3 - 2
-}
-
-func maxFuel(_ fuel: Int) -> Int {
-  return max(fuel, 0)
-}
-
-func calcActualFuel(_ mass: Int) -> Int {
-  return mass > 0 ? maxFuel(calcFuel(mass)) + calcActualFuel(maxFuel(calcFuel(mass))) : 0
-}
-
-let answer1 = masses
-  .map(calcFuel)
-  .reduce(0, +)
-
-print(answer1)
-
-let answer2 = masses
-  .map(calcActualFuel)
-  .reduce(0, +)
-
-print(answer2)
