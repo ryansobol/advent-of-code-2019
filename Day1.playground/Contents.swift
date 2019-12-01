@@ -6,7 +6,7 @@ let masses = input
   .split(separator: "\n")
   .map { Int($0)! }
 
-// Recursive solution
+// Recursive, FP solution
 // https://www.reddit.com/r/adventofcode/comments/e4axxe/2019_day_1_solutions/f9ct724
 func calcFuel(_ mass: Int) -> Int {
   return mass / 3 - 2
@@ -30,7 +30,7 @@ let answer2 = masses
 
 print(answer2)
 
-// Iterative solution
+// Iterative, OOP + FP solution for the 2nd problem
 struct Data {
   let fuel: Int
   let masses: [Int]
