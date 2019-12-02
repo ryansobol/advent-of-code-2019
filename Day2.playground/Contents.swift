@@ -7,9 +7,6 @@ var intcode = input
   .split(separator: ",")
   .map { Int($0)! }
 
-intcode[1] = 12
-intcode[2] = 2
-
 func runProgram(_ intcode: [Int]) -> Int {
   var memory = intcode
 
@@ -41,6 +38,9 @@ func runProgram(_ intcode: [Int]) -> Int {
 
   return memory[0]
 }
+
+intcode[1] = 12
+intcode[2] = 2
 
 print(runProgram(intcode))
 
