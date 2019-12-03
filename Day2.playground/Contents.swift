@@ -44,10 +44,10 @@ intcode[2] = 2
 
 print(runProgram(intcode))
 
-func checkForMatch(_ target: Int, _ memory: [Int], _ result: Int) {
+func checkForMatch(_ target: Int, _ memory: [Int], _ answer: Int) {
   DispatchQueue.global().async {
     if runProgram(memory) == target {
-      print(result)
+      print(answer)
     }
   }
 }
@@ -59,8 +59,8 @@ for noun in 0...99 {
     intcode[1] = noun
     intcode[2] = verb
 
-    let result = 100 * noun + verb
+    let answer = 100 * noun + verb
 
-    checkForMatch(target, intcode, result)
+    checkForMatch(target, intcode, answer)
   }
 }
