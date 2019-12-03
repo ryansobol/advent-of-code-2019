@@ -48,6 +48,7 @@ func checkForMatch(_ target: Int, _ memory: [Int], _ answer: Int) {
   DispatchQueue.global().async {
     if runProgram(memory) == target {
       print(answer)
+      exit(0)
     }
   }
 }
