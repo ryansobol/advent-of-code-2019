@@ -38,6 +38,7 @@ struct Point: CustomStringConvertible, Hashable {
     return abs(self.x) + abs(self.y)
   }
 
+  // Was helpful for debugging
   var description: String {
     return "(\(self.x), \(self.y))"
   }
