@@ -1,19 +1,24 @@
 func transformPasswordToDigits(password: Int) -> [Int] {
-  return String(password).compactMap { $0.wholeNumberValue }
+  return String(password).compactMap { digit in digit.wholeNumberValue }
 }
 
 func hasIncreasingDigits(digits: [Int]) -> Bool {
-  return (0...4).filter { digits[$0] <= digits[$0 + 1] }.count == 5
+  let lastIndex = digits.endIndex - 1
+
+  return (0..<lastIndex).filter { index in digits[index] <= digits[index + 1] }.count == lastIndex
 }
 
 func hasMatchingTwoDigits(digits: [Int]) -> Bool {
-  return (0...4).filter { digits[$0] == digits[$0 + 1] }.count > 0
+  let lastIndex = digits.endIndex - 1
+
+  return (0..<lastIndex).filter { index in digits[index] == digits[index + 1] }.count > 0
 }
 
 func hasGroupingOfTwoDigits(digits: [Int]) -> Bool {
   return digits.reduce(into: [:]) { accum, digit in
     accum[digit, default: 0] += 1
-  }.values.contains(2)
+  }
+  .values.contains(2)
 }
 
 let passwordRange = 234208...765869
