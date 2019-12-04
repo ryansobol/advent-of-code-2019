@@ -21,7 +21,8 @@ func hasMatchingTwoDigits(digits: [Int]) -> Bool {
 func hasGroupingOfTwoDigits(digits: [Int]) -> Bool {
   return digits
     .reduce(into: [:]) { accum, digit in accum[digit, default: 0] += 1 }
-    .values.contains(2)
+    .values
+    .contains(2)
 }
 
 let passwordRange = 234208...765869
