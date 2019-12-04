@@ -54,7 +54,7 @@ func transformVectorsToPointsAndSteps(_ vectors: [Vector]) -> [Point: Int] {
       currentPoint = Point(point: currentPoint, direction: vector.direction)
       currentStep += 1
 
-      pointsAndSteps.updateValue(currentStep, forKey: currentPoint)
+      pointsAndSteps[currentPoint] = currentStep
     }
   }
 
