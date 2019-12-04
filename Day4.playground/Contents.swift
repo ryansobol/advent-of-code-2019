@@ -19,7 +19,6 @@ func hasGroupingOfTwoDigits(digits: [Int]) -> Bool {
 let passwordRange = 234208...765869
 
 let increasingDigits = passwordRange
-  .lazy
   .map(transformPasswordToDigits)
   .filter(hasIncreasingDigits)
 
