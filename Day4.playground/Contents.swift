@@ -1,5 +1,5 @@
 func transformPasswordToDigits(password: Int) -> [Int] {
-  return String(password).compactMap { digit in digit.wholeNumberValue }
+  return String(password).compactMap { character in character.wholeNumberValue }
 }
 
 func hasIncreasingDigits(digits: [Int]) -> Bool {
