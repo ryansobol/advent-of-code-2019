@@ -186,7 +186,7 @@ func runProgram(_ intcode: [Int], _ input: Int) {
 
 let url = Bundle.main.url(forResource: "input", withExtension: "txt")
 let input = try! String(contentsOf: url!)
-var intcode = input
+let intcode = input
   .trimmingCharacters(in: .newlines)
   .split(separator: ",")
   .compactMap { Int($0) }
