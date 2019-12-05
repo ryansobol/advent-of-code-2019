@@ -164,7 +164,7 @@ func runProgram(_ intcode: [Int], _ input: Int) {
       instruction = Halt()
     }
 
-    let parameterModes: ParameterModes = (
+    let paramModes: ParameterModes = (
       first: ParameterMode(rawValue: optcode / 100 % 10)!,
       second: ParameterMode(rawValue: optcode / 1000 % 10)!,
       third: ParameterMode(rawValue: optcode / 10000 % 10)!
@@ -173,7 +173,7 @@ func runProgram(_ intcode: [Int], _ input: Int) {
     optcodePtr = instruction.execute(
       pointer: optcodePtr,
       memory: &memory,
-      paramModes: parameterModes
+      paramModes: paramModes
     )
   }
 }
