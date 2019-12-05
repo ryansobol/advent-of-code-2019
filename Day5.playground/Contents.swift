@@ -2,18 +2,18 @@ import Foundation
 
 typealias Program = [Int]
 
-typealias Pointer = Int
+typealias Address = Int
 
 enum ParameterMode: Int {
   case position = 0
   case immediate = 1
 
-  func valueFrom(program: Program, pointer: Pointer) -> Int {
+  func valueFrom(program: Program, address: Address) -> Int {
     switch self {
     case .position:
-      return program[pointer]
+      return program[address]
     case .immediate:
-      return pointer
+      return address
     }
   }
 }
@@ -31,74 +31,74 @@ struct ParameterModes {
 }
 
 protocol Instruction {
-  func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer
+  func execute(program: inout Program, address: Address, paramModes: ParameterModes) -> Address
 }
 
 struct WriteInstruction: Instruction {
   let operation: (Int, Int) -> Int
 
-  func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer {
-    let leftPtr = program[pointer + 1]
-    let rightPtr = program[pointer + 2]
-    let resultPtr = program[pointer + 3]
+  func execute(program: inout Program, address: Address, paramModes: ParameterModes) -> Address {
+    let leftAdr = program[address + 1]
+    let rightAdr = program[address + 2]
+    let resultAdr = program[address + 3]
 
-    let left = paramModes.first.valueFrom(program: program, pointer: leftPtr)
-    let right = paramModes.second.valueFrom(program: program, pointer: rightPtr)
+    let left = paramModes.first.valueFrom(program: program, address: leftAdr)
+    let right = paramModes.second.valueFrom(program: program, address: rightAdr)
     let result = operation(left, right)
 
-    program[resultPtr] = result
+    program[resultAdr] = result
 
-    return pointer + 4
+    return address + 4
   }
 }
 
 struct InputInstruction: Instruction {
   let input: Int
 
-  func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer {
-    let inputPtr = program[pointer + 1]
+  func execute(program: inout Program, address: Address, paramModes: ParameterModes) -> Address {
+    let inputAdr = program[address + 1]
 
-    program[inputPtr] = input
+    program[inputAdr] = input
 
-    return pointer + 2
+    return address + 2
   }
 }
 
 struct OutputInstruction: Instruction {
   let operation: (Int) -> Void
 
-  func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer {
-    let outputPtr = program[pointer + 1]
-    let output = paramModes.first.valueFrom(program: program, pointer: outputPtr)
+  func execute(program: inout Program, address: Address, paramModes: ParameterModes) -> Address {
+    let outputAdr = program[address + 1]
+    let output = paramModes.first.valueFrom(program: program, address: outputAdr)
 
     operation(output)
 
-    return pointer + 2
+    return address + 2
   }
 }
 
 struct JumpInstruction: Instruction {
   let operation: (Int) -> Bool
 
-  func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer {
-    let valuePtr = program[pointer + 1]
-    let destinationPtr = program[pointer + 2]
+  func execute(program: inout Program, address: Address, paramModes: ParameterModes) -> Address {
+    let valueAdr = program[address + 1]
+    let destinationAdr = program[address + 2]
 
-    let value = paramModes.first.valueFrom(program: program, pointer: valuePtr)
-    let destination = paramModes.second.valueFrom(program: program, pointer: destinationPtr)
+    let value = paramModes.first.valueFrom(program: program, address: valueAdr)
+    let destination = paramModes.second.valueFrom(program: program, address: destinationAdr)
 
     if operation(value) {
       return destination
     }
 
-    return pointer + 3
+    return address + 3
   }
 }
 
 struct HaltInstruction: Instruction {
-  let operation: (Program) -> Pointer
+  let operation: (Program) -> Address
 
-  func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer {
+  func execute(program: inout Program, address: Address, paramModes: ParameterModes) -> Address {
     return operation(program)
   }
 }
@@ -121,10 +121,10 @@ enum Command: Int {
 
 func run(program: Program, input: Int) {
   var memory = program
-  var optcodePtr = 0
+  var optcodeAdr = 0
 
-  while optcodePtr < memory.endIndex {
-    let optcode = memory[optcodePtr]
+  while optcodeAdr < memory.endIndex {
+    let optcode = memory[optcodeAdr]
     let command = Command(optcode: optcode)
 
     let instruction: Instruction
@@ -152,9 +152,9 @@ func run(program: Program, input: Int) {
 
     let paramModes = ParameterModes(optcode: optcode)
 
-    optcodePtr = instruction.execute(
+    optcodeAdr = instruction.execute(
       program: &memory,
-      pointer: optcodePtr,
+      address: optcodeAdr,
       paramModes: paramModes
     )
   }
