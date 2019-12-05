@@ -33,42 +33,42 @@ struct ParameterModes {
   }
 }
 
+typealias Program = [Int]
+
 typealias Pointer = Int
 
-typealias Memory = [Int]
-
 protocol Instruction {
-  func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer
+  func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer
 }
 
 struct WriteInstruction: Instruction {
   let operation: (Int, Int) -> Int
 
-  func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
-    let leftPtr = memory[pointer + 1]
-    let rightPtr = memory[pointer + 2]
-    let resultPtr = memory[pointer + 3]
+  func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer {
+    let leftPtr = program[pointer + 1]
+    let rightPtr = program[pointer + 2]
+    let resultPtr = program[pointer + 3]
 
     let left: Int
     let right: Int
 
     switch paramModes.first {
     case .position:
-      left = memory[leftPtr]
+      left = program[leftPtr]
     case .immediate:
       left = leftPtr
     }
 
     switch paramModes.second {
     case .position:
-      right = memory[rightPtr]
+      right = program[rightPtr]
     case .immediate:
       right = rightPtr
     }
 
     let result = operation(left, right)
 
-    memory[resultPtr] = result
+    program[resultPtr] = result
 
     return pointer + 4
   }
@@ -77,24 +77,24 @@ struct WriteInstruction: Instruction {
 struct InputInstruction: Instruction {
   let input: Int
 
-  func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
-    let inputPtr = memory[pointer + 1]
+  func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer {
+    let inputPtr = program[pointer + 1]
 
-    memory[inputPtr] = input
+    program[inputPtr] = input
 
     return pointer + 2
   }
 }
 
 struct OutputInstruction: Instruction {
-  func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
-    let outputPtr = memory[pointer + 1]
+  func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer {
+    let outputPtr = program[pointer + 1]
 
     let output: Int
 
     switch paramModes.first {
     case .position:
-      output = memory[outputPtr]
+      output = program[outputPtr]
     case .immediate:
       output = outputPtr
     }
@@ -108,23 +108,23 @@ struct OutputInstruction: Instruction {
 struct JumpInstruction: Instruction {
   let operation: (Int) -> Bool
 
-  func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
-    let valuePtr = memory[pointer + 1]
-    let destinationPtr = memory[pointer + 2]
+  func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer {
+    let valuePtr = program[pointer + 1]
+    let destinationPtr = program[pointer + 2]
 
     let value: Int
     let destination: Int
 
     switch paramModes.first {
     case .position:
-      value = memory[valuePtr]
+      value = program[valuePtr]
     case .immediate:
       value = valuePtr
     }
 
     switch paramModes.second {
     case .position:
-      destination = memory[destinationPtr]
+      destination = program[destinationPtr]
     case .immediate:
       destination = destinationPtr
     }
@@ -138,13 +138,13 @@ struct JumpInstruction: Instruction {
 }
 
 struct HaltInstruction: Instruction {
-  func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
-    return memory.endIndex
+  func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer {
+    return program.endIndex
   }
 }
 
-func runProgram(_ intcode: [Int], _ input: Int) {
-  var memory = intcode
+func runProgram(program: Program, input: Int) {
+  var memory = program
   var optcodePtr = 0
 
   while optcodePtr < memory.endIndex {
@@ -177,8 +177,8 @@ func runProgram(_ intcode: [Int], _ input: Int) {
     let paramModes = ParameterModes(optcode: optcode)
 
     optcodePtr = instruction.execute(
+      program: &memory,
       pointer: optcodePtr,
-      memory: &memory,
       paramModes: paramModes
     )
   }
@@ -191,5 +191,9 @@ let intcode = input
   .split(separator: ",")
   .compactMap { Int($0) }
 
-runProgram(intcode, 5)
+print("Answer 1:")
+runProgram(program: intcode, input: 1)
+
+print("Answer 2:")
+runProgram(program: intcode, input: 5)
 
