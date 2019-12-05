@@ -140,8 +140,10 @@ struct JumpInstruction: Instruction {
 }
 
 struct HaltInstruction: Instruction {
+  let operation: (Program) -> Pointer
+
   func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer {
-    return program.endIndex
+    return operation(program)
   }
 }
 
@@ -173,7 +175,7 @@ func runProgram(program: Program, input: Int) {
     case .equalTo:
       instruction = WriteInstruction(operation: { $0 == $1 ? 1 : 0 })
     case .halt:
-      instruction = HaltInstruction()
+      instruction = HaltInstruction(operation: { $0.endIndex })
     }
 
     let paramModes = ParameterModes(optcode: optcode)
