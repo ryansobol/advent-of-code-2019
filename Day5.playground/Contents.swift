@@ -7,6 +7,15 @@ typealias Pointer = Int
 enum ParameterMode: Int {
   case position = 0
   case immediate = 1
+
+  func valueFrom(program: Program, pointer: Pointer) -> Int {
+    switch self {
+    case .position:
+      return program[pointer]
+    case .immediate:
+      return pointer
+    }
+  }
 }
 
 struct ParameterModes {
@@ -33,23 +42,8 @@ struct WriteInstruction: Instruction {
     let rightPtr = program[pointer + 2]
     let resultPtr = program[pointer + 3]
 
-    let left: Int
-    let right: Int
-
-    switch paramModes.first {
-    case .position:
-      left = program[leftPtr]
-    case .immediate:
-      left = leftPtr
-    }
-
-    switch paramModes.second {
-    case .position:
-      right = program[rightPtr]
-    case .immediate:
-      right = rightPtr
-    }
-
+    let left = paramModes.first.valueFrom(program: program, pointer: leftPtr)
+    let right = paramModes.second.valueFrom(program: program, pointer: rightPtr)
     let result = operation(left, right)
 
     program[resultPtr] = result
@@ -75,15 +69,7 @@ struct OutputInstruction: Instruction {
 
   func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer {
     let outputPtr = program[pointer + 1]
-
-    let output: Int
-
-    switch paramModes.first {
-    case .position:
-      output = program[outputPtr]
-    case .immediate:
-      output = outputPtr
-    }
+    let output = paramModes.first.valueFrom(program: program, pointer: outputPtr)
 
     operation(output)
 
@@ -98,22 +84,8 @@ struct JumpInstruction: Instruction {
     let valuePtr = program[pointer + 1]
     let destinationPtr = program[pointer + 2]
 
-    let value: Int
-    let destination: Int
-
-    switch paramModes.first {
-    case .position:
-      value = program[valuePtr]
-    case .immediate:
-      value = valuePtr
-    }
-
-    switch paramModes.second {
-    case .position:
-      destination = program[destinationPtr]
-    case .immediate:
-      destination = destinationPtr
-    }
+    let value = paramModes.first.valueFrom(program: program, pointer: valuePtr)
+    let destination = paramModes.second.valueFrom(program: program, pointer: destinationPtr)
 
     if operation(value) {
       return destination
