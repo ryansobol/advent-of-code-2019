@@ -87,6 +87,8 @@ struct InputInstruction: Instruction {
 }
 
 struct OutputInstruction: Instruction {
+  let operation: (Int) -> Void
+
   func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer {
     let outputPtr = program[pointer + 1]
 
@@ -99,7 +101,7 @@ struct OutputInstruction: Instruction {
       output = outputPtr
     }
 
-    print(output)
+    operation(output)
 
     return pointer + 2
   }
@@ -161,7 +163,7 @@ func runProgram(program: Program, input: Int) {
     case .input:
       instruction = InputInstruction(input: input)
     case .output:
-      instruction = OutputInstruction()
+      instruction = OutputInstruction(operation: { print($0) })
     case .jumpIfTrue:
       instruction = JumpInstruction(operation: { $0 != 0 })
     case .jumpIfFalse:
