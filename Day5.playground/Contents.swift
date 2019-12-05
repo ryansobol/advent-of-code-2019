@@ -41,7 +41,7 @@ protocol Instruction {
   func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer
 }
 
-struct BinaryWrite: Instruction {
+struct Write: Instruction {
   let operation: (Int, Int) -> Int
 
   func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
@@ -105,7 +105,7 @@ struct Output: Instruction {
   }
 }
 
-struct UnaryJump: Instruction {
+struct Jump: Instruction {
   let operation: (Int) -> Bool
 
   func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
@@ -155,21 +155,21 @@ func runProgram(_ intcode: [Int], _ input: Int) {
 
     switch command {
     case .addition:
-      instruction = BinaryWrite(operation: +)
+      instruction = Write(operation: +)
     case .multiplication:
-      instruction = BinaryWrite(operation: *)
+      instruction = Write(operation: *)
     case .input:
       instruction = Input(input: input)
     case .output:
       instruction = Output()
     case .jumpIfTrue:
-      instruction = UnaryJump(operation: { $0 != 0 })
+      instruction = Jump(operation: { $0 != 0 })
     case .jumpIfFalse:
-      instruction = UnaryJump(operation: { $0 == 0 })
+      instruction = Jump(operation: { $0 == 0 })
     case .lessThan:
-      instruction = BinaryWrite(operation: { $0 < $1 ? 1 : 0 })
+      instruction = Write(operation: { $0 < $1 ? 1 : 0 })
     case .equalTo:
-      instruction = BinaryWrite(operation: { $0 == $1 ? 1 : 0 })
+      instruction = Write(operation: { $0 == $1 ? 1 : 0 })
     case .halt:
       instruction = Halt()
     }
