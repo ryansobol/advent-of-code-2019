@@ -28,13 +28,13 @@ typealias Pointer = Int
 typealias Memory = [Int]
 
 protocol Instruction {
-  func execute(paramModes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer
+  func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer
 }
 
 struct BinaryWrite: Instruction {
   let operation: (Int, Int) -> Int
 
-  func execute(paramModes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer {
+  func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
     let leftPtr = memory[pointer + 1]
     let rightPtr = memory[pointer + 2]
     let resultPtr = memory[pointer + 3]
@@ -67,7 +67,7 @@ struct BinaryWrite: Instruction {
 struct Input: Instruction {
   let input: Int
 
-  func execute(paramModes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer {
+  func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
     let inputPtr = memory[pointer + 1]
 
     memory[inputPtr] = input
@@ -77,7 +77,7 @@ struct Input: Instruction {
 }
 
 struct Output: Instruction {
-  func execute(paramModes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer {
+  func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
     let outputPtr = memory[pointer + 1]
 
     let output: Int
@@ -98,7 +98,7 @@ struct Output: Instruction {
 struct UnaryJump: Instruction {
   let operation: (Int) -> Bool
 
-  func execute(paramModes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer {
+  func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
     let valuePtr = memory[pointer + 1]
     let destinationPtr = memory[pointer + 2]
 
@@ -128,7 +128,7 @@ struct UnaryJump: Instruction {
 }
 
 struct Halt: Instruction {
-  func execute(paramModes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer {
+  func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
     return memory.endIndex
   }
 }
@@ -171,9 +171,9 @@ func runProgram(_ intcode: [Int], _ input: Int) {
     )
 
     optcodePtr = instruction.execute(
-      paramModes: parameterModes,
       pointer: optcodePtr,
-      memory: &memory
+      memory: &memory,
+      paramModes: parameterModes
     )
   }
 }
