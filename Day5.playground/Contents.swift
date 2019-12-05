@@ -38,15 +38,15 @@ struct WriteInstruction: Instruction {
   let operation: (Int, Int) -> Int
 
   func execute(program: inout Program, address: Address, paramModes: ParameterModes) -> Address {
-    let leftAdr = program[address + 1]
-    let rightAdr = program[address + 2]
-    let resultAdr = program[address + 3]
+    let leftAddress = program[address + 1]
+    let rightAddress = program[address + 2]
+    let resultAddress = program[address + 3]
 
-    let left = paramModes.first.valueFrom(program: program, address: leftAdr)
-    let right = paramModes.second.valueFrom(program: program, address: rightAdr)
+    let left = paramModes.first.valueFrom(program: program, address: leftAddress)
+    let right = paramModes.second.valueFrom(program: program, address: rightAddress)
     let result = operation(left, right)
 
-    program[resultAdr] = result
+    program[resultAddress] = result
 
     return address + 4
   }
@@ -56,9 +56,9 @@ struct InputInstruction: Instruction {
   let input: Int
 
   func execute(program: inout Program, address: Address, paramModes: ParameterModes) -> Address {
-    let inputAdr = program[address + 1]
+    let inputAddress = program[address + 1]
 
-    program[inputAdr] = input
+    program[inputAddress] = input
 
     return address + 2
   }
@@ -68,8 +68,8 @@ struct OutputInstruction: Instruction {
   let operation: (Int) -> Void
 
   func execute(program: inout Program, address: Address, paramModes: ParameterModes) -> Address {
-    let outputAdr = program[address + 1]
-    let output = paramModes.first.valueFrom(program: program, address: outputAdr)
+    let outputAddress = program[address + 1]
+    let output = paramModes.first.valueFrom(program: program, address: outputAddress)
 
     operation(output)
 
@@ -81,11 +81,11 @@ struct JumpInstruction: Instruction {
   let operation: (Int) -> Bool
 
   func execute(program: inout Program, address: Address, paramModes: ParameterModes) -> Address {
-    let valueAdr = program[address + 1]
-    let destinationAdr = program[address + 2]
+    let valueAddress = program[address + 1]
+    let destinationAddress = program[address + 2]
 
-    let value = paramModes.first.valueFrom(program: program, address: valueAdr)
-    let destination = paramModes.second.valueFrom(program: program, address: destinationAdr)
+    let value = paramModes.first.valueFrom(program: program, address: valueAddress)
+    let destination = paramModes.second.valueFrom(program: program, address: destinationAddress)
 
     if operation(value) {
       return destination
@@ -121,10 +121,10 @@ enum Command: Int {
 
 func run(program: Program, input: Int) {
   var memory = program
-  var optcodeAdr = 0
+  var optcodeAddress = 0
 
-  while optcodeAdr < memory.endIndex {
-    let optcode = memory[optcodeAdr]
+  while optcodeAddress < memory.endIndex {
+    let optcode = memory[optcodeAddress]
     let command = Command(optcode: optcode)
 
     let instruction: Instruction
@@ -152,9 +152,9 @@ func run(program: Program, input: Int) {
 
     let paramModes = ParameterModes(optcode: optcode)
 
-    optcodeAdr = instruction.execute(
+    optcodeAddress = instruction.execute(
       program: &memory,
-      address: optcodeAdr,
+      address: optcodeAddress,
       paramModes: paramModes
     )
   }
