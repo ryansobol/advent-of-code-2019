@@ -1,20 +1,8 @@
 import Foundation
 
-enum Command: Int {
-  case addition = 1
-  case multiplication = 2
-  case input = 3
-  case output = 4
-  case jumpIfTrue = 5
-  case jumpIfFalse = 6
-  case lessThan = 7
-  case equalTo = 8
-  case halt = 99
+typealias Program = [Int]
 
-  init(optcode: Int) {
-    self.init(rawValue: optcode % 100)!
-  }
-}
+typealias Pointer = Int
 
 enum ParameterMode: Int {
   case position = 0
@@ -32,10 +20,6 @@ struct ParameterModes {
     self.third = ParameterMode(rawValue: optcode / 10000 % 10)!
   }
 }
-
-typealias Program = [Int]
-
-typealias Pointer = Int
 
 protocol Instruction {
   func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer
@@ -144,6 +128,22 @@ struct HaltInstruction: Instruction {
 
   func execute(program: inout Program, pointer: Pointer, paramModes: ParameterModes) -> Pointer {
     return operation(program)
+  }
+}
+
+enum Command: Int {
+  case addition = 1
+  case multiplication = 2
+  case input = 3
+  case output = 4
+  case jumpIfTrue = 5
+  case jumpIfFalse = 6
+  case lessThan = 7
+  case equalTo = 8
+  case halt = 99
+
+  init(optcode: Int) {
+    self.init(rawValue: optcode % 100)!
   }
 }
 
