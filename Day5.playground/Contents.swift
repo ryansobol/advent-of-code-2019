@@ -41,7 +41,7 @@ protocol Instruction {
   func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer
 }
 
-struct Write: Instruction {
+struct WriteInstruction: Instruction {
   let operation: (Int, Int) -> Int
 
   func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
@@ -74,7 +74,7 @@ struct Write: Instruction {
   }
 }
 
-struct Input: Instruction {
+struct InputInstruction: Instruction {
   let input: Int
 
   func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
@@ -86,7 +86,7 @@ struct Input: Instruction {
   }
 }
 
-struct Output: Instruction {
+struct OutputInstruction: Instruction {
   func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
     let outputPtr = memory[pointer + 1]
 
@@ -105,7 +105,7 @@ struct Output: Instruction {
   }
 }
 
-struct Jump: Instruction {
+struct JumpInstruction: Instruction {
   let operation: (Int) -> Bool
 
   func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
@@ -137,7 +137,7 @@ struct Jump: Instruction {
   }
 }
 
-struct Halt: Instruction {
+struct HaltInstruction: Instruction {
   func execute(pointer: Pointer, memory: inout Memory, paramModes: ParameterModes) -> Pointer {
     return memory.endIndex
   }
@@ -155,23 +155,23 @@ func runProgram(_ intcode: [Int], _ input: Int) {
 
     switch command {
     case .addition:
-      instruction = Write(operation: +)
+      instruction = WriteInstruction(operation: +)
     case .multiplication:
-      instruction = Write(operation: *)
+      instruction = WriteInstruction(operation: *)
     case .input:
-      instruction = Input(input: input)
+      instruction = InputInstruction(input: input)
     case .output:
-      instruction = Output()
+      instruction = OutputInstruction()
     case .jumpIfTrue:
-      instruction = Jump(operation: { $0 != 0 })
+      instruction = JumpInstruction(operation: { $0 != 0 })
     case .jumpIfFalse:
-      instruction = Jump(operation: { $0 == 0 })
+      instruction = JumpInstruction(operation: { $0 == 0 })
     case .lessThan:
-      instruction = Write(operation: { $0 < $1 ? 1 : 0 })
+      instruction = WriteInstruction(operation: { $0 < $1 ? 1 : 0 })
     case .equalTo:
-      instruction = Write(operation: { $0 == $1 ? 1 : 0 })
+      instruction = WriteInstruction(operation: { $0 == $1 ? 1 : 0 })
     case .halt:
-      instruction = Halt()
+      instruction = HaltInstruction()
     }
 
     let paramModes = ParameterModes(optcode: optcode)
