@@ -28,13 +28,13 @@ typealias Pointer = Int
 typealias Memory = [Int]
 
 protocol Instruction {
-  func execute(modes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer
+  func execute(paramModes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer
 }
 
 struct BinaryWrite: Instruction {
   let operation: (Int, Int) -> Int
 
-  func execute(modes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer {
+  func execute(paramModes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer {
     let leftPtr = memory[pointer + 1]
     let rightPtr = memory[pointer + 2]
     let resultPtr = memory[pointer + 3]
@@ -42,14 +42,14 @@ struct BinaryWrite: Instruction {
     let left: Int
     let right: Int
 
-    switch modes.first {
+    switch paramModes.first {
     case .position:
       left = memory[leftPtr]
     case .immediate:
       left = leftPtr
     }
 
-    switch modes.second {
+    switch paramModes.second {
     case .position:
       right = memory[rightPtr]
     case .immediate:
@@ -67,7 +67,7 @@ struct BinaryWrite: Instruction {
 struct Input: Instruction {
   let input: Int
 
-  func execute(modes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer {
+  func execute(paramModes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer {
     let inputPtr = memory[pointer + 1]
 
     memory[inputPtr] = input
@@ -77,12 +77,12 @@ struct Input: Instruction {
 }
 
 struct Output: Instruction {
-  func execute(modes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer {
+  func execute(paramModes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer {
     let outputPtr = memory[pointer + 1]
 
     let output: Int
 
-    switch modes.first {
+    switch paramModes.first {
     case .position:
       output = memory[outputPtr]
     case .immediate:
@@ -98,21 +98,21 @@ struct Output: Instruction {
 struct UnaryJump: Instruction {
   let operation: (Int) -> Bool
 
-  func execute(modes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer {
+  func execute(paramModes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer {
     let valuePtr = memory[pointer + 1]
     let destinationPtr = memory[pointer + 2]
 
     let value: Int
     let destination: Int
 
-    switch modes.first {
+    switch paramModes.first {
     case .position:
       value = memory[valuePtr]
     case .immediate:
       value = valuePtr
     }
 
-    switch modes.second {
+    switch paramModes.second {
     case .position:
       destination = memory[destinationPtr]
     case .immediate:
@@ -128,7 +128,7 @@ struct UnaryJump: Instruction {
 }
 
 struct Halt: Instruction {
-  func execute(modes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer {
+  func execute(paramModes: ParameterModes, pointer: Pointer, memory: inout Memory) -> Pointer {
     return memory.endIndex
   }
 }
@@ -171,7 +171,7 @@ func runProgram(_ intcode: [Int], _ input: Int) {
     )
 
     optcodePtr = instruction.execute(
-      modes: parameterModes,
+      paramModes: parameterModes,
       pointer: optcodePtr,
       memory: &memory
     )
