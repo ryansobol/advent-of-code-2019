@@ -147,7 +147,7 @@ enum Command: Int {
   }
 }
 
-func runProgram(program: Program, input: Int) {
+func run(program: Program, input: Int) {
   var memory = program
   var optcodePtr = 0
 
@@ -196,8 +196,8 @@ let intcode = input
   .compactMap { Int($0) }
 
 print("Answer 1:")
-runProgram(program: intcode, input: 1)
+run(program: intcode, input: 1)
 
 print("Answer 2:")
-runProgram(program: intcode, input: 5)
+run(program: intcode, input: 5)
 
