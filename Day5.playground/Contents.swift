@@ -24,7 +24,7 @@ enum ParameterMode: Int {
 struct ParameterModes {
   let first: ParameterMode
   let second: ParameterMode
-  let third: ParameterMode
+  let third: ParameterMode  // Defined by the problem, but not used
 
   init(optcode: Int) {
     self.first = ParameterMode(rawValue: optcode / 100 % 10)!
