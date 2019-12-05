@@ -10,6 +10,10 @@ enum Command: Int {
   case lessThan = 7
   case equalTo = 8
   case halt = 99
+
+  init(optcode: Int) {
+    self.init(rawValue: optcode % 100)!
+  }
 }
 
 enum ParameterMode: Int {
@@ -17,11 +21,17 @@ enum ParameterMode: Int {
   case immediate = 1
 }
 
-typealias ParameterModes = (
-  first: ParameterMode,
-  second: ParameterMode,
-  third: ParameterMode
-)
+struct ParameterModes {
+  let first: ParameterMode
+  let second: ParameterMode
+  let third: ParameterMode
+
+  init(optcode: Int) {
+    self.first = ParameterMode(rawValue: optcode / 100 % 10)!
+    self.second = ParameterMode(rawValue: optcode / 1000 % 10)!
+    self.third = ParameterMode(rawValue: optcode / 10000 % 10)!
+  }
+}
 
 typealias Pointer = Int
 
@@ -139,7 +149,7 @@ func runProgram(_ intcode: [Int], _ input: Int) {
 
   while optcodePtr < memory.endIndex {
     let optcode = memory[optcodePtr]
-    let command = Command(rawValue: optcode % 100)!
+    let command = Command(optcode: optcode)
 
     let instruction: Instruction
 
@@ -164,11 +174,7 @@ func runProgram(_ intcode: [Int], _ input: Int) {
       instruction = Halt()
     }
 
-    let paramModes: ParameterModes = (
-      first: ParameterMode(rawValue: optcode / 100 % 10)!,
-      second: ParameterMode(rawValue: optcode / 1000 % 10)!,
-      third: ParameterMode(rawValue: optcode / 10000 % 10)!
-    )
+    let paramModes = ParameterModes(optcode: optcode)
 
     optcodePtr = instruction.execute(
       pointer: optcodePtr,
