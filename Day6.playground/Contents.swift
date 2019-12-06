@@ -46,6 +46,7 @@ let satelliteToBody = input
     accum[Body(bodies[1])] = Body(bodies[0])
   }
 
+// Used as a cache for answer1, and as a core data structure for answer2
 var satelliteToOrbits: [Body: Orbits] = [:]
 
 let answer1 = satelliteToBody
