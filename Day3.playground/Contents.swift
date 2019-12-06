@@ -46,8 +46,8 @@ struct Point: CustomStringConvertible, Hashable {
   }
 }
 
-func transformVectorsToPointsAndSteps(_ vectors: [Vector]) -> [Point: Int] {
-  var pointsAndSteps: [Point: Int] = [:]
+func transformVectorsIntoPointToStep(_ vectors: [Vector]) -> [Point: Int] {
+  var pointToStep: [Point: Int] = [:]
   var currentPoint = Point(x: 0, y: 0)
   var currentStep = 0
 
@@ -56,16 +56,16 @@ func transformVectorsToPointsAndSteps(_ vectors: [Vector]) -> [Point: Int] {
       currentPoint = Point(point: currentPoint, direction: vector.direction)
       currentStep += 1
 
-      pointsAndSteps[currentPoint] = currentStep
+      pointToStep[currentPoint] = currentStep
     }
   }
 
-  return pointsAndSteps
+  return pointToStep
 }
 
 let url = Bundle.main.url(forResource: "input", withExtension: "txt")
 let input = try! String(contentsOf: url!)
-let pointsAndSteps = input
+let pointToStep = input
   .split(separator: "\n")
   .map { $0
     .split(separator: ",")
@@ -74,9 +74,9 @@ let pointsAndSteps = input
       magnitude: Int($0.suffix(from: $0.index(after: $0.startIndex)))!
     ) }
   }
-  .map(transformVectorsToPointsAndSteps)
+  .map(transformVectorsIntoPointToStep)
 
-let intersectionPoints = Set(pointsAndSteps[0].keys).intersection(Set(pointsAndSteps[1].keys))
+let intersectionPoints = Set(pointToStep[0].keys).intersection(Set(pointToStep[1].keys))
 
 let answer1 = intersectionPoints
   .min(by: { $0.distance < $1.distance })!
@@ -85,7 +85,7 @@ let answer1 = intersectionPoints
 print(answer1)
 
 let answer2 = intersectionPoints
-  .map { pointsAndSteps[0][$0]! + pointsAndSteps[1][$0]! }
+  .map { pointToStep[0][$0]! + pointToStep[1][$0]! }
   .min()!
 
 print(answer2)
