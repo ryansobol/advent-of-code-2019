@@ -22,15 +22,15 @@ func calcOrbits(
     orbits = ["COM"]
   }
   else {
-    let nextSatellite = satelliteToBody[satellite]!
-    let nextOrbits = calcOrbits(
-      satellite: nextSatellite,
+    let indirectSatellite = satelliteToBody[satellite]!
+    let indirectOrbits = calcOrbits(
+      satellite: indirectSatellite,
       satelliteToBody: satelliteToBody,
       satelliteToOrbits: &satelliteToOrbits
     )
-    let currentOrbits: Orbits = [nextSatellite]
+    let directOrbits: Orbits = [indirectSatellite]
 
-    orbits = currentOrbits.union(nextOrbits)
+    orbits = directOrbits.union(indirectOrbits)
   }
 
   // Cache update
