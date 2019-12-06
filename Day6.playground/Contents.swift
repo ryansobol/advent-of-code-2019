@@ -11,9 +11,11 @@ func calcOrbits(
   satelliteToOrbits: inout [Body: Orbits]
 ) -> Orbits {
   if let orbits = satelliteToOrbits[satellite] {
+    // Cache hit
     return orbits
   }
 
+  // Cache miss
   let orbits: Orbits
 
   if satellite == "COM" {
