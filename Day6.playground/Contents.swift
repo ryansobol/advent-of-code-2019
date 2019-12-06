@@ -19,16 +19,16 @@ func calcOrbits(
   let orbits: Orbits
 
   if satellite == "COM" {
-    orbits = []
+    orbits = ["COM"]
   }
   else {
-    let currentOrbits: Orbits = [satellite]
     let nextSatellite = satelliteToBody[satellite]!
     let nextOrbits = calcOrbits(
       satellite: nextSatellite,
       satelliteToBody: satelliteToBody,
       satelliteToOrbits: &satelliteToOrbits
     )
+    let currentOrbits: Orbits = [nextSatellite]
 
     orbits = currentOrbits.union(nextOrbits)
   }
@@ -64,11 +64,8 @@ let answer1 = satelliteToBody
 
 print(answer1)
 
-let directBodyYou = satelliteToBody["YOU"]!
-let directBodySan = satelliteToBody["SAN"]!
-
-let answer2 = satelliteToOrbits[directBodyYou]!
-  .symmetricDifference(satelliteToOrbits[directBodySan]!)
+let answer2 = satelliteToOrbits["YOU"]!
+  .symmetricDifference(satelliteToOrbits["SAN"]!)
   .count
 
 print(answer2)
