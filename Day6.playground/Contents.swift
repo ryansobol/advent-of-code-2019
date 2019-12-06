@@ -33,6 +33,7 @@ func calcOrbits(
     orbits = currentOrbits.union(nextOrbits)
   }
 
+  // Cache update
   satelliteToOrbits[satellite] = orbits
 
   return orbits
