@@ -1,3 +1,5 @@
+// https://adventofcode.com/2019/day/4
+
 func transformPasswordToDigits(password: Int) -> [Int] {
   return String(password).compactMap { character in character.wholeNumberValue }
 }

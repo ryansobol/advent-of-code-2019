@@ -1,3 +1,5 @@
+// https://adventofcode.com/2019/day/1
+
 import Foundation
 
 let url = Bundle.main.url(forResource: "input", withExtension: "txt")
