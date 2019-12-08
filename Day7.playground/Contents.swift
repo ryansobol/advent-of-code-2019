@@ -179,7 +179,7 @@ extension Array {
   }
 }
 
-// Unbounded, blocking, concurrent queue
+// Unbounded, blocking queue
 class Queue<Element> {
   let dispatchQueue = DispatchQueue(label: "Queue")
   let filledSemaphore = DispatchSemaphore(value: 0)
