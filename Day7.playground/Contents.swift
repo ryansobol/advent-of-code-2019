@@ -2,34 +2,6 @@
 
 import Foundation
 
-// Unbounded, blocking, concurrent queue
-class Queue<Element> {
-  let dispatchQueue = DispatchQueue(label: "Queue")
-  let filledSemaphore = DispatchSemaphore(value: 0)
-
-  var buffer: [Element] = []
-
-  init(_ element: Element) {
-    self.append(element)
-  }
-
-  func append(_ element: Element) {
-    self.dispatchQueue.sync { buffer.append(element) }
-
-    self.filledSemaphore.signal()
-  }
-
-  func removeFirst() -> Element {
-    self.filledSemaphore.wait()
-
-    var result: Element?
-
-    self.dispatchQueue.sync { result = self.buffer.removeFirst() }
-
-    return result!
-  }
-}
-
 typealias Program = [Int]
 
 typealias Address = Int
@@ -204,6 +176,34 @@ extension Array {
   var permutations: [[Element]] {
     guard let (head, rest) = self.chopped() else { return [[]] }
     return rest.permutations.flatMap { $0.interleaved(head) }
+  }
+}
+
+// Unbounded, blocking, concurrent queue
+class Queue<Element> {
+  let dispatchQueue = DispatchQueue(label: "Queue")
+  let filledSemaphore = DispatchSemaphore(value: 0)
+
+  var buffer: [Element] = []
+
+  init(_ element: Element) {
+    self.append(element)
+  }
+
+  func append(_ element: Element) {
+    self.dispatchQueue.sync { buffer.append(element) }
+
+    self.filledSemaphore.signal()
+  }
+
+  func removeFirst() -> Element {
+    self.filledSemaphore.wait()
+
+    var result: Element?
+
+    self.dispatchQueue.sync { result = self.buffer.removeFirst() }
+
+    return result!
   }
 }
 
