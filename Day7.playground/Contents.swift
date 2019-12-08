@@ -207,6 +207,42 @@ extension Array {
   }
 }
 
+typealias Task = (Int) -> Void
+
+typealias TaskRunner = (Int, Task) -> Void
+
+func transformPhaseSettingsIntoSignal(
+  phaseSettings: [Int],
+  program: Program,
+  taskRunner: TaskRunner
+) -> Int {
+  let queues = phaseSettings.map { phaseSetting in Queue<Int>(phaseSetting) }
+
+  queues.first!.append(0)
+
+  taskRunner(queues.count) { index in
+    let inputQueue = queues[index]
+    let outputQueue = queues[(index + 1) % phaseSettings.count]
+
+    run(program: program, inputQueue: inputQueue, outputQueue: outputQueue)
+  }
+
+  return queues.first!.removeFirst()
+}
+
+func solve(phases: [Int], program: Program, taskRunner: TaskRunner) -> Int {
+  return phases
+    .permutations
+    .map { phaseSettings in
+      transformPhaseSettingsIntoSignal(
+        phaseSettings: phaseSettings,
+        program: program,
+        taskRunner: taskRunner
+      )
+    }
+    .max()!
+}
+
 let url = Bundle.main.url(forResource: "input", withExtension: "txt")
 let input = try! String(contentsOf: url!)
 let intcode = input
@@ -214,42 +250,14 @@ let intcode = input
   .split(separator: ",")
   .compactMap { Int($0) }
 
-let answer1 = Array(0...4)
-  .permutations
-  .map { phaseSettings -> Int in
-    let queues = phaseSettings.map { phaseSetting in Queue<Int>(phaseSetting) }
-
-    queues.first!.append(0)
-
-    for index in (0..<phaseSettings.count) {
-      let inputQueue = queues[index]
-      let outputQueue = queues[(index + 1) % phaseSettings.count]
-
-      run(program: intcode, inputQueue: inputQueue, outputQueue: outputQueue)
-    }
-
-    return queues.first!.removeFirst()
-  }
-  .max()!
+let answer1 = solve(phases: Array(0...4), program: intcode) { iterations, task in
+  (0..<iterations).forEach(task)
+}
 
 print(answer1)
 
-let answer2 = Array(5...9)
-  .permutations
-  .map { phaseSettings -> Int in
-    let queues = phaseSettings.map { phaseSetting in Queue<Int>(phaseSetting) }
-
-    queues.first!.append(0)
-
-    DispatchQueue.concurrentPerform(iterations: phaseSettings.count) { index in
-      let inputQueue = queues[index]
-      let outputQueue = queues[(index + 1) % phaseSettings.count]
-
-      run(program: intcode, inputQueue: inputQueue, outputQueue: outputQueue)
-    }
-
-    return queues.first!.removeFirst()
-  }
-  .max()!
+let answer2 = solve(phases: Array(5...9), program: intcode) { iterations, task in
+  DispatchQueue.concurrentPerform(iterations: iterations, execute: task)
+}
 
 print(answer2)
